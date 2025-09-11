@@ -1,261 +1,139 @@
-# Personal Adaptive Learning (PAL) System
+# PAL — Hybrid RL Personal Adaptive Learner
 
-## 🎯 Overview
+PAL selects question difficulty per interaction by blending a robust Statistical policy with a lightweight RL bandit. It adapts quickly, explains each decision, and gracefully falls back if a component is unavailable.
 
-PAL is an intelligent adaptive learning system that personalizes question difficulty based on learner behavior patterns. The system features three algorithms: **Statistical (Baseline)**, **Pure RL**, and **Hybrid RL**, with the Hybrid RL approach achieving **23.8% higher learning outcomes** and **enhanced interpretability**.
+## What’s inside
+- **Hybrid RL selector** (Statistical + RL with adaptive blending)
+- **Pure RL bandit** (epsilon‑greedy, Q‑learning over {Easy, Medium, Hard})
+- **Enhanced Statistical policy** (IRT base + time/streak/confidence buffers)
+- **Browser demo** (vanilla) and **React integration**
+- **Logging & analysis** (JSONL logs, scorecards, adaptiveness plots)
 
-## 🧠 Algorithm Architecture
-
-### 1. **Statistical Algorithm (Baseline)**
-
-- **Multi-factor approach** with skill score thresholds
-- **Adjustment factors**: Recent performance, response time, accuracy by difficulty, streak momentum
-- **Strengths**: Stable, predictable, domain knowledge integration
-- **Limitations**: Limited adaptation, no exploration, poor interpretability
-
-### 2. **Pure RL Algorithm**
-
-- **Multi-Armed Bandit** with epsilon-greedy exploration
-- **Q-Learning** for difficulty selection
-- **6-dimensional state**: skill score, recent accuracy, response time, streak momentum, learning velocity, confidence
-- **Reward function**: accuracy + engagement + progression + momentum
-
-### 3. **Hybrid RL Algorithm** ⭐
-
-- **Intelligent blending** of statistical and RL approaches
-- **Adaptive weights** that increase RL influence over time
-- **Confidence-scaled blending** mechanism
-- **Graceful fallbacks** for robust operation
-
-## 📊 Performance Results
-
-| Metric                     | Statistical | Pure RL | Hybrid RL | Improvement      |
-| -------------------------- | ----------- | ------- | --------- | ---------------- |
-| **Overall Accuracy** | 74.0%       | 78.2%   | 84.1%     | **+13.5%** |
-| **Final Score**      | 61.8        | 71.3    | 76.5      | **+23.8%** |
-| **Best Streak**      | 3.4         | 4.1     | 3.9       | **+14.7%** |
-| **Interpretability** | 0.3         | 0.7     | 0.9       | **+200%**  |
-
-## 🚀 Quick Start
-
-### 1. **Run the System**
-
-```bash
-# Open the main application
-open index.html
-
-# Or test RL integration specifically
-open test_rl_integration.html
-```
-
-### 2. **Algorithm Selection**
-
-The system automatically prioritizes:
-
-1. **Hybrid RL** (if available) - Best performance + interpretability
-2. **Pure RL** (if available) - Good performance + high interpretability
-3. **Enhanced Statistical** (if available) - Stable baseline
-4. **Fallback Statistical** (always available) - Guaranteed operation
-
-### 3. **Monitor Performance**
-
-- **Real-time analytics** panel shows Q-values, exploration rates, decision reasoning
-- **Decision explanations** provide human-readable reasoning
-- **Learning progress** tracking with Q-value evolution
-
-## 🔧 Configuration
-
-### RL Algorithm Parameters
-
-```javascript
-const RL_CONFIG = {
-    learningRate: 0.1,           // Q-learning learning rate
-    explorationRate: 0.15,       // Initial exploration rate
-    explorationDecay: 0.995,     // Exploration decay factor
-    minExplorationRate: 0.05,    // Minimum exploration rate
-    rewardDiscount: 0.9,         // Future reward discount
-    memorySize: 1000,            // Experience replay memory size
-    updateFrequency: 5           // Update frequency
-};
-```
-
-### Hybrid Algorithm Parameters
-
-```javascript
-const HYBRID_CONFIG = {
-    initialRLWeight: 0.3,        // Start with 30% RL influence
-    maxRLWeight: 0.8,            // Maximum 80% RL influence
-    rlWeightIncrement: 0.02,     // Increase RL weight by 2% per session
-    minDecisionsForRL: 10,       // Minimum decisions before using RL
-    confidenceThreshold: 0.6     // Confidence threshold for RL dominance
-};
-```
-
-## 📈 Analysis & Evaluation
-
-### **Comprehensive Analysis Framework**
-
-```bash
-# Install dependencies
-pip install -r requirements_analysis.txt
-
-# Run complete analysis
-python Comprehensive_Algorithm_Comparison.ipynb
-
-# Generate scorecard comparison
-# Creates PAL_Algorithm_Scorecard.png with key metrics
-```
-
-### **Key Analysis Features**
-
-- **Performance comparison** across all algorithms
-- **Statistical significance testing** with t-tests and effect sizes
-- **Interpretability metrics** with radar charts
-- **Learning curve analysis** with Q-value evolution
-- **Decision pattern visualization** over time
-
-### **Generated Visualizations**
-
-1. **Comprehensive Scorecard** - Main comparison image
-2. **Performance Analysis** - Box plots, distributions, correlations
-3. **Learning Effectiveness** - Learning gain, progression rates
-4. **Advanced Analysis** - Radar charts, heatmaps, confidence intervals
-5. **Statistical Analysis** - Effect sizes, significance testing
-
-## 🔍 Interpretability Features
-
-### **Real-time Decision Explanations**
-
-```javascript
-{
-    "finalDecision": "Medium",
-    "blendingWeights": {"statistical": "40%", "rl": "60%"},
-    "reasoning": "High recent accuracy (85%), Q-value: 0.456 (max: 0.456)",
-    "confidence": 0.78,
-    "qValues": {"Easy": "0.234", "Medium": "0.456", "Hard": "0.123"}
-}
-```
-
-### **Learning Progress Tracking**
-
-- **Q-value evolution** showing algorithm learning
-- **Exploration rate decay** demonstrating adaptation
-- **Decision pattern changes** as confidence grows
-- **Blending weight evolution** over time
-
-## 📚 Technical Implementation
-
-### **State Representation**
-
-- **6-dimensional state** encoding learner profile
-- **Normalized features** for consistent learning
-- **Temporal patterns** captured in state representation
-
-### **Reward Function Design**
-
-```javascript
-reward = accuracy_reward + engagement_reward + progression_reward + momentum_reward
-
-// Where:
-// - accuracy_reward: +1.0 for correct, -0.5 for incorrect
-// - engagement_reward: Based on response time appropriateness (0-0.3)
-// - progression_reward: Difficulty progression appropriateness (0-0.2)
-// - momentum_reward: Learning streak bonus (0-0.1)
-```
-
-### **Hybrid Decision Making**
-
-```javascript
-// Core hybrid algorithm logic
-if (confidence > threshold && decisions > minThreshold) {
-    rlWeight = min(0.8, initialWeight + (confidence * progress * increment));
-    decision = (1 - rlWeight) * statisticalDecision + rlWeight * rlDecision;
-} else {
-    decision = statisticalDecision; // Fallback for stability
-}
-```
-
-## 🎯 Key Benefits
-
-### **1. Superior Performance**
-
-- **23.8% improvement** in learning outcomes over baseline
-- **13.5% higher accuracy** across all question types
-- **Better difficulty progression** based on individual patterns
-
-### **2. Enhanced Interpretability**
-
-- **Real-time decision explanations** in human-readable format
-- **Q-value transparency** showing algorithm confidence
-- **Learning process visibility** for educational insights
-
-### **3. Robust Operation**
-
-- **Graceful fallbacks** ensure system always works
-- **Minimal integration** with existing codebase
-- **Production-ready** with comprehensive error handling
-
-## 📁 File Structure
-
+## Directory structure
 ```
 PAL---Personal-Adaptive-Learner/
-├── app.js                          # Main application logic
-├── index.html                      # Main UI
-├── algorithms/
-│   ├── rl_adaptive_learning.js     # Pure RL algorithm
-│   ├── hybrid_adaptive_learning.js # Hybrid RL algorithm
-│   └── time_streak_confidence.js   # Statistical enhancements
-├── Comprehensive_Algorithm_Comparison.ipynb  # Analysis notebook
-├── PAL AAAI 26 Demo Questions Aug 29 2025.json  # Dataset
-├── pal_results.jsonl              # Results data
-├── test_rl_integration.html       # RL testing interface
-└── requirements_analysis.txt      # Python dependencies
+├── index.html                      # Vanilla demo UI
+├── app.py                          # Static server + /pal_logs JSONL collector
+├── src/
+│   ├── app.js                      # Vanilla demo controller
+│   └── algorithms/
+│       ├── hybrid_adaptive_learning.js
+│       ├── rl_adaptive_learning.js
+│       └── time_streak_confidence.js
+│   └── utils/
+│       ├── dataset_loader.js       # Convert datasets → PAL segments
+│       └── session_logger.js       # Post metrics to /pal_logs
+├── react-learning-app/             # React UI integrated with PAL
+│   ├── public/pal/                 # Copied PAL browser scripts
+│   └── src/pal/usePAL.js           # React hook adapter for PAL
+├── data/
+│   ├── PAL AAAI 26 Demo Questions Aug 29 2025.json
+│   └── pal_results.jsonl           # Session logs (app.py collector)
+├── results/
+│   ├── pal_compare.png             # Baseline vs Enhanced scorecard
+│   ├── hybrid_adaptiveness.png     # Adaptiveness over interactions
+│   └── hybrid_adaptiveness_26.png  # First 26 interactions
+├── utils/
+│   └── adaptiveness_eval.py        # Builds adaptiveness plot + metrics
+├── notebooks/                      # Analysis notebooks
+├── docs/                           # Reports
+└── requirements_analysis.txt       # Python analysis deps
 ```
 
-## 🔬 Research & Development
+## How Hybrid works (short)
+The Hybrid policy blends Statistical and RL predictions using a weight that grows with evidence (confidence, progress). Every decision includes an explanation (weights, predictions), improving transparency.
 
-### **Statistical Significance**
+## Quick start
+### A) Vanilla demo
+1) Start server and collector:
+```bash
+cd /Users/aryamanbahl/Desktop/IIITH/M25/AIISC/PAL---Personal-Adaptive-Learner
+python3 app.py --port 8080
+```
+2) Open:
+```bash
+open http://localhost:8080/index.html
+```
+3) Click “Load Attached Dataset”, then “Start Learning!”. Session logs append to `data/pal_results.jsonl`.
 
-- **Hybrid RL vs Statistical**: t=4.23, p<0.001 (highly significant)
-- **Effect Sizes**: Cohen's d = 0.89 (large effect)
-- **Robustness**: Maintains performance with noisy data
+### B) React app
+1) Install Node (nvm/Homebrew), then:
+```bash
+cd /Users/aryamanbahl/Desktop/IIITH/M25/AIISC/PAL---Personal-Adaptive-Learner/react-learning-app
+npm install
+npm start
+```
+2) Optional: enable logging while dev‑serving
+```json
+// react-learning-app/package.json
+"proxy": "http://localhost:8080"
+```
+Run in another terminal:
+```bash
+cd /Users/aryamanbahl/Desktop/IIITH/M25/AIISC/PAL---Personal-Adaptive-Learner
+python3 app.py --port 8080
+```
 
-### **Ablation Study Results**
+## Headless evaluation & plots
+1) Install deps:
+```bash
+python3 -m pip install -r requirements_analysis.txt
+python3 -m pip install playwright
+python3 -m playwright install --with-deps chromium
+```
+2) Run sessions & scorecard:
+```bash
+python3 auto_run.py --port 8080 --runs 6 --modes enhanced --results data/pal_results.jsonl --plot results/pal_compare.png
+```
+3) Adaptiveness plots:
+```bash
+python3 utils/adaptiveness_eval.py --results data/pal_results.jsonl --out results/hybrid_adaptiveness.png
+python3 utils/adaptiveness_eval.py --results data/pal_results.jsonl --out results/hybrid_adaptiveness_26.png --limit 26
+```
 
-- **Recent Accuracy**: 31% contribution (most important)
-- **Skill Score**: 23% contribution
-- **Response Time**: 18% contribution
-- **Optimal RL Weight**: 0.8 (80% RL influence at peak)
+## Getting the user’s response history
+PAL records each interaction and persists it after a session.
 
-## 🚀 Future Directions
+- Live during session: `state.learnerProfile.difficultyHistory`
+  - `{ difficulty, correct, responseTime, scoreChange, questionText, selectedOption, correctAnswer }`
+- Persisted per session: `data/pal_results.jsonl`
+  - Each line includes `answeredQuestions` mirroring the above fields.
 
-### **Algorithmic Enhancements**
+Export to CSV:
+```python
+import json, csv
+rows=[]
+with open('data/pal_results.jsonl') as f:
+    for line in f:
+        line=line.strip()
+        if not line: continue
+        r=json.loads(line)
+        for a in (r.get('answeredQuestions') or []):
+            a['variant']=r.get('variant')
+            a['finalScore']=r.get('finalScore')
+            rows.append(a)
+with open('results/answered_questions.csv','w',newline='') as f:
+    w=csv.DictWriter(f, fieldnames=['variant','difficulty','correct','rt','q','selected','answer','finalScore'])
+    w.writeheader()
+    for x in rows:
+        w.writerow({
+          'variant':x.get('variant'),
+          'difficulty':x.get('difficulty'),
+          'correct':x.get('correct'),
+          'rt':x.get('rt'),
+          'q':x.get('q'),
+          'selected':x.get('selected'),
+          'answer':x.get('answer'),
+          'finalScore':x.get('finalScore')
+        })
+print('Wrote results/answered_questions.csv', len(rows))
+```
 
-1. **Deep RL Integration** for complex state representations
-2. **Multi-objective Optimization** balancing multiple learning goals
-3. **Transfer Learning** leveraging knowledge from similar learners
-4. **Online Learning** for continuous adaptation
+## Tuning adaptiveness (where to edit)
+- Statistical thresholds, cooldowns, smoothing: `src/algorithms/time_streak_confidence.js`
+- Hybrid blending & explanations: `src/algorithms/hybrid_adaptive_learning.js`
+- RL learning rates, epsilon schedule: `src/algorithms/rl_adaptive_learning.js`
 
-### **Educational Applications**
-
-1. **Multi-modal Learning** across different question types
-2. **Collaborative Learning** adapting to group dynamics
-3. **Long-term Retention** optimizing for knowledge persistence
-4. **Emotional Intelligence** incorporating learner emotional states
-
-## 📖 Documentation
-
-- **`HYBRID_RL_ALGORITHM_REPORT.md`** - Complete technical report
-- **`REPORT_EXECUTIVE_SUMMARY.md`** - Executive summary
-- **`Comprehensive_Algorithm_Comparison.ipynb`** - Interactive analysis
-- **`test_rl_integration.html`** - Testing interface
-
-## 🎉 Conclusion
-
-The PAL system represents a significant advancement in adaptive learning, successfully combining statistical stability with RL adaptability. The **Hybrid RL algorithm achieves 23.8% improvement in learning outcomes** while maintaining **comprehensive interpretability**, making it ideal for educational applications where both performance and transparency are crucial.
-
-The system is **production-ready** and provides educators and learners with the insights they need for effective personalized learning experiences.
-
----
-
-*For detailed technical analysis and implementation guides, see the comprehensive documentation files in this repository.*
+Notes:
+- Opening `index.html` without the server works for UI, but dataset fetches and `/pal_logs` need `app.py`.
+- React + PAL: integration lives in `react-learning-app/src/pal/usePAL.js` and `src/pages/Video.js`.
